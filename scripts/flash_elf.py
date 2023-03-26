@@ -3,7 +3,7 @@ from .console import Console, Color
 from fabric import Connection
 import subprocess
 
-class ElfFlash(Script):
+class FlashElf(Script):
     """Create helper script to flash elf using openocd tool on local or remote device"""
     
     def run(self, **kwargs):
@@ -43,6 +43,7 @@ class ElfFlash(Script):
 
     def run_remote(self, ssh_config_name: str) -> None:
         with Connection(ssh_config_name) as c:
+                Console.pprint(f"Uploading {self.elf_path} to /home/{c.user}/", Color.GREEN)
                 result = c.put(self.elf_path, remote=f"/home/{c.user}/")
                 Console.pprint(f"Uploaded {result.local} to {result.remote}", Color.GREEN)
                 result = c.run(f'openocd -f interface/raspberrypi-swd.cfg -f target/rp2040.cfg -c "program /home/{c.user}/{self.elf_file_name} verify reset exit"')
