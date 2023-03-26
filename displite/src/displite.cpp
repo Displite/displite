@@ -138,39 +138,5 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 }
 
 void display_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
-    if (area->x2 < 0 || area->y2 < 0 || area->x1 > (disp->hor_res - 1) || area->y1 > (disp->ver_res - 1)) {
-		lv_disp_flush_ready(disp);
-		return;
-	}
-
-    /* Truncate the area to the screen */
-	int32_t act_x1 = area->x1 < 0 ? 0 : area->x1;
-	int32_t act_y1 = area->y1 < 0 ? 0 : area->y1;
-	int32_t act_x2 = area->x2 > disp->hor_res - 1 ? disp->hor_res - 1 : area->x2;
-	int32_t act_y2 = area->y2 > disp->ver_res - 1 ? disp->ver_res - 1 : area->y2;
-
-    dsp_drv->command(display::display::CASET);
-	dsp_drv->data(act_x1 >> 8);
-	dsp_drv->data(act_x1 >> 0);
-	dsp_drv->data(act_x2 >> 8);
-	dsp_drv->data(act_x2 >> 0);
-
-	dsp_drv->command(display::display::RASET);
-	dsp_drv->data(act_y1 >> 8);
-	dsp_drv->data(act_y1 >> 0);
-	dsp_drv->data(act_y2 >> 8);
-	dsp_drv->data(act_y2 >> 0);
-
-	dsp_drv->command(display::display::RAMWR);
-
-    uint16_t *ds = (uint16_t *)color_p;
-
-	for (int32_t y{act_y1}; y <= act_y2; y++) {
-		for (int32_t x{act_x1}; x <= act_x2; x++) {
-			dsp_drv->data16(*ds);
-			ds++;
-		}
-	}
-
-	lv_disp_flush_ready(disp);
+    dsp_drv->flush_pixels(disp, area, color_p);
 }

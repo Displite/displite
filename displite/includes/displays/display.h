@@ -4,6 +4,7 @@
 #include <vector>
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
+#include "lvgl/lvgl.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,6 +40,7 @@ namespace display {
         virtual void data(const uint8_t &) = 0;
         virtual void data16(const uint16_t &) = 0;
         virtual void get_display_size(unsigned short &, unsigned short &) = 0;
+        virtual void flush_pixels(lv_disp_drv_t *, const lv_area_t *, lv_color_t *) = 0;
 
         static constexpr uint8_t NOP     {0x00}; // NOP
         static constexpr uint8_t SWRST {0x01}; //soft reset
