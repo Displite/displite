@@ -17,12 +17,7 @@ namespace display {
         uint32_t ms_time{};
     };
 
-    class prop {
-        public:
-        virtual void rotate(short) = 0;
-    };
-
-    class display : public prop {
+    class display {
         protected:
         const uint CHIP_SELECT;
         const uint DATA_OR_COMMAND;
@@ -41,6 +36,18 @@ namespace display {
         virtual void data16(const uint16_t &) = 0;
         virtual void get_display_size(unsigned short &, unsigned short &) = 0;
         virtual void flush_pixels(lv_disp_drv_t *, const lv_area_t *, lv_color_t *) = 0;
+        /**
+         * set display orientation. 
+         * 
+         * 0 - 0°
+         * 1 - 90°
+         * 2 - 180°
+         * 3 - 270°
+         *
+         * @param[in] rotation: allowed values: 0, 1, 2, 3
+         * @return void
+        */
+        virtual void rotate(short) = 0;
 
         static constexpr uint8_t NOP     {0x00}; // NOP
         static constexpr uint8_t SWRST {0x01}; //soft reset
