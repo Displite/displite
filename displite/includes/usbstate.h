@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-class UsbState {
+class usbstate {
     public:
     static const unsigned short not_mounted{250};
     static const unsigned short mounted{1000};
