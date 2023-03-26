@@ -1,15 +1,16 @@
-#include "hid.h"
+#include "usbstate.h"
 #include "tusb.h"
 #include "pico/stdlib.h"
 #include "millis.h"
 #include "pico/multicore.h"
 #include "lvgl/lvgl.h"
+#include "ui.h"
 #include "gui.h"
 #include "displays/display.h"
-#include "lvgl/demos/lv_demos.h"
+#include "hardware/watchdog.h"
 
-static unsigned short blink_interval_ms = UsbState::not_mounted;
-GUI_CLS *ui_class;
+static unsigned short blink_interval_ms = usbstate::not_mounted;
+ui::ui *ui_class;
 display::display *dsp_drv;
 
 void tinyusb_process();
@@ -21,7 +22,6 @@ int main() {
 	lv_init();
     stdio_init_all();
     sleep_ms(250); // core1 hanging when there's no delay
-    multicore_launch_core1(tinyusb_process);
     lvgl_process();
     return 0;
 }
@@ -42,6 +42,7 @@ void lvgl_process() {
 	dsp_drv = new DSP_DRV_CLS(spi0, 17, 20, 19, 18, 21);
 	unsigned short hor_res{};
 	unsigned short ver_res{};
+	dsp_drv->rotate(GUI_PREFERRED_ROTATION);
 	dsp_drv->get_display_size(hor_res, ver_res);
 
 	static lv_disp_draw_buf_t draw_buf;
@@ -57,8 +58,8 @@ void lvgl_process() {
 	disp_drv.ver_res = ver_res;
 	lv_disp_t *disp = lv_disp_drv_register(&disp_drv);
 
-	lv_demo_stress();
-
+	ui_class = new GUI_CLS(disp);
+	multicore_launch_core1(tinyusb_process);
 	while(true) {
         lv_task_handler();
 		lv_timer_handler();
@@ -88,22 +89,26 @@ void led_blinking_task() {
 //--------------------------------------------------------------------+
 
 // Invoked when device is mounted
-void tud_mount_cb(void) { blink_interval_ms = UsbState::mounted; }
+void tud_mount_cb(void) { blink_interval_ms = usbstate::mounted; }
 
 // Invoked when device is unmounted
-void tud_umount_cb(void) { blink_interval_ms = UsbState::not_mounted; }
+void tud_umount_cb(void) { 
+	blink_interval_ms = usbstate::not_mounted; 
+	ui_class->show_splash_page();
+}
 
 // Invoked when usb bus is suspended
 // remote_wakeup_en : if host allow us  to perform remote wakeup
 // Within 7ms, device must draw an average of current less than 2.5 mA from bus
 void tud_suspend_cb(bool remote_wakeup_en) {
 	(void)remote_wakeup_en;
-	blink_interval_ms = UsbState::suspended;
+	blink_interval_ms = usbstate::suspended;
+	ui_class->show_splash_page();
 }
 
 // Invoked when usb bus is resumed
 void tud_resume_cb(void) { 
-	blink_interval_ms = UsbState::mounted; 
+	blink_interval_ms = usbstate::mounted; 
 }
 
 //--------------------------------------------------------------------+
@@ -135,6 +140,34 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 	(void)report_id;
 	(void)report_type;
 
+
+	if((buffer == NULL) || (buffer[0] == '\0')) {
+		return;
+	}
+
+	uint8_t command = buffer[0];
+	buffer++;
+	std::string data(buffer, buffer+(bufsize-1));
+	std::string result = "";
+	switch(command) {
+		case 'r':
+			tud_hid_report(0, "1", 1);
+			watchdog_reboot(0, 0, 100);
+			break;
+		case 'g':
+			result = ui_class->get_pages();
+			tud_hid_report(0, result.c_str(), result.size());
+			break;
+		case 'c':
+			result = ui_class->get_active_page();
+			tud_hid_report(0, result.c_str(), result.size());
+			break;
+		case 'p':
+			result = ui_class->set_active_page(data) ? "1" : "0";
+			tud_hid_report(0, result.c_str(), result.size());
+		default:
+			tud_hid_report(0, "0", 1);
+	}
 }
 
 void display_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {

@@ -101,8 +101,12 @@ char serial_number[2 * PICO_UNIQUE_BOARD_ID_SIZE_BYTES + 1];
 char const* string_desc_arr [] =
 {
   (const char[]) { 0x09, 0x04 }, // 0: is supported language is English (0x0409)
-  "StatVIZ",                     // 1: Manufacturer
-  "StatVIZ",              // 2: Product
+  "Displite",                     // 1: Manufacturer
+  #ifdef PRODUCT_NAME             // 2: Product
+  PRODUCT_NAME,
+  #else
+  "Device",
+  #endif              
   serial_number,                      // 3: Serials, should use chip ID
 };
 

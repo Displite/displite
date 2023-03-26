@@ -11,7 +11,7 @@ namespace display {
     void ili9486::reset() {
         spi::reset();
         init(cd_list);
-        rotate(1);
+        rotate(0);
     }
 
     void ili9486::command(const uint8_t &d) {
@@ -42,20 +42,20 @@ namespace display {
 
     void ili9486::rotate(short rotation) {
         switch (rotation) {
-        case 1:
+        case 0:
             command(MADCTL);
             data(0x80 | (1 << 3));
             break;
-        case 2:
+        case 1:
             command(MADCTL);
             data(0x20 | (1 << 3));
             std::swap(horizontal_px, vertical_px);
             break;
-        case 3:
+        case 2:
             command(MADCTL);
             data(0x40 | (1 << 3));
             break;
-        case 4:
+        case 3:
             command(MADCTL);
             data(0xE0 | (1 << 3));
             std::swap(horizontal_px, vertical_px);

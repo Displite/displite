@@ -14,10 +14,13 @@ HOMEPAGE_URL "https://github.com/displite/displite"
 # initialize the Raspberry Pi Pico SDK
 pico_sdk_init()
 
-include_directories(displite_gui
-${CMAKE_CURRENT_LIST_DIR}/displite/includes
-${CMAKE_CURRENT_LIST_DIR}/portar/includes
-${CMAKE_CURRENT_LIST_DIR}/clib
+include(portar/portar.cmake)
+
+set(EXE_NAME "displite_${GUI_NAME}")
+
+include_directories(
+"${CMAKE_CURRENT_LIST_DIR}/displite/includes"
+"${CMAKE_CURRENT_LIST_DIR}/clib"
 )
 
 add_subdirectory(clib/lvgl)
@@ -28,25 +31,27 @@ file(GLOB_RECURSE MAIN_SRCS
     ${CMAKE_CURRENT_LIST_DIR}/displite/src/*.cpp 
     ${CMAKE_CURRENT_LIST_DIR}/displite/src/*.c
     ${CMAKE_CURRENT_LIST_DIR}/displite/src/displays/*.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/portar/src/*.c
-    ${CMAKE_CURRENT_LIST_DIR}/portar/src/*.cpp
 )
 
-add_executable(displite_gui
+add_executable(${EXE_NAME}
 ${MAIN_SRCS}
+${GUI_SRCS}
 )
 
-target_compile_definitions(displite_gui
-PUBLIC USE_ILI9486
+string(TOUPPER ${GUI_DISPLAY} USE_DISPLAY_DRIVER)
+
+target_compile_definitions(${EXE_NAME}
+PUBLIC "USE_${USE_DISPLAY_DRIVER}"
+PUBLIC PRODUCT_NAME="${GUI_NAME}"
 )
 
-target_link_libraries(displite_gui
+target_link_libraries(${EXE_NAME}
 pico_stdlib
 pico_multicore
 pico_time
 tinyusb_device
 pico_unique_id
 hardware_spi
+hardware_watchdog
 lvgl
-lvgl_demos
 )
