@@ -1,16 +1,41 @@
 #include "ui.h"
 
+LV_IMG_DECLARE(displite_400_img)
+
 namespace ui {
 
     class splash_screen: public page {
         public:
-        splash_screen();
-        void init();
-        void deinit();
-        void refresh(std::string &data);
+        splash_screen(short hor_px, short ver_px): page("SS", hor_px, ver_px) {
+
+        }
+
+        void init() {
+            if(parent_object != nullptr) {
+                deinit();
+            }
+
+            parent_object = lv_obj_create(NULL);
+            lv_obj_set_style_bg_color(parent_object, lv_color_hex(0x333333), LV_STATE_DEFAULT);
+            lv_obj_t * img1 = lv_img_create(parent_object);
+            lv_img_set_src(img1, &displite_400_img);
+            if(hor_px < 400) {
+                short reduction_factor{((hor_px - 20)*256)/400};
+                lv_img_set_zoom(img1, reduction_factor);
+            }
+            lv_obj_align(img1, LV_ALIGN_CENTER, 0 , 0);
+        }
+
+        void deinit() {
+            lv_obj_del(parent_object);
+            parent_object = nullptr;
+        }
+        void refresh(std::string &data) {
+
+        }
     };
 
-    page::page(std::string page_id) : PAGE_ID{page_id} {
+    page::page(std::string page_id, short hor_px, short ver_px) : PAGE_ID{page_id}, hor_px{hor_px}, ver_px{ver_px} {
 
     }
 
@@ -22,33 +47,8 @@ namespace ui {
         return parent_object;
     }
 
-    splash_screen::splash_screen(): page("SS") {
-
-    }
-
-    void splash_screen::refresh(std::string &data) {
-
-    }
-
-    void splash_screen::init() {
-        if(parent_object != nullptr) {
-            deinit();
-        }
-
-        parent_object = lv_obj_create(NULL);
-        lv_obj_t * label1 = lv_label_create(parent_object);
-        lv_obj_set_style_text_align(label1, LV_TEXT_ALIGN_CENTER, 0);
-        lv_label_set_text(label1, "displite");
-        lv_obj_align(label1, LV_ALIGN_CENTER, 0 , 0);
-    }
-
-    void splash_screen::deinit() {
-        lv_obj_del(parent_object);
-        parent_object = nullptr;
-    }
-
-    ui::ui(lv_disp_t * dsp) {
-        splash_screen *ss = new splash_screen();
+    ui::ui(const lv_disp_t * dsp) {
+        splash_screen *ss = new splash_screen(dsp->driver->hor_res, dsp->driver->ver_res);
         page_list[ss->PAGE_ID] = ss;
         show_splash_page();
     }

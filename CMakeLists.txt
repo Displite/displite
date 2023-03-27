@@ -31,6 +31,7 @@ file(GLOB_RECURSE MAIN_SRCS
     ${CMAKE_CURRENT_LIST_DIR}/displite/src/*.cpp 
     ${CMAKE_CURRENT_LIST_DIR}/displite/src/*.c
     ${CMAKE_CURRENT_LIST_DIR}/displite/src/displays/*.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/displite/src/images/*.c
 )
 
 add_executable(${EXE_NAME}
