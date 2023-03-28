@@ -18,7 +18,7 @@ namespace ui {
         const std::string PAGE_ID;
         page(std::string, short, short);
         virtual void init() = 0;
-        virtual void deinit() = 0;
+        void deinit();
         lv_obj_t * get();
         virtual void refresh(std::string &data) = 0;
     };

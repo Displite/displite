@@ -26,10 +26,6 @@ namespace ui {
             lv_obj_align(img1, LV_ALIGN_CENTER, 0 , 0);
         }
 
-        void deinit() {
-            lv_obj_del(parent_object);
-            parent_object = nullptr;
-        }
         void refresh(std::string &data) {
 
         }
@@ -37,6 +33,11 @@ namespace ui {
 
     page::page(std::string page_id, short hor_px, short ver_px) : PAGE_ID{page_id}, hor_px{hor_px}, ver_px{ver_px} {
 
+    }
+
+    void page::deinit() {
+        lv_obj_del(parent_object);
+        parent_object = nullptr;
     }
 
     lv_obj_t * page::get() {
@@ -67,14 +68,17 @@ namespace ui {
     }
 
     bool ui::set_active_page(std::string page_id) {
-        if(page_list.find(page_id) == page_list.end()) return false;
-
         if(page_id == current_page) return true;
 
+        if(page_list.find(page_id) == page_list.end()) return false;
+
         page *next_page = page_list.at(page_id);
+
         lv_scr_load(next_page->get());
+
         if(current_page != "") {
-            next_page->deinit();
+            page *prev_page = page_list.at(current_page);
+            prev_page->deinit();
         }
         current_page = page_id;
         return true;
