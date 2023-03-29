@@ -10,14 +10,18 @@ extern "C" {
 
 #define GUI_PREFERRED_ROTATION 1
 
-class portar: public ui::ui {
-    public:
-    portar(lv_disp_t *);
-};
+namespace ui {
+    class portar: public ui {
+        public:
+        portar(lv_disp_t *);
+    };
+}
+
+
 
 
 // Do not modify
-#define GUI_CLS portar
+#define GUI_CLS ui::portar
 #define DSP_DRV_CLS display::ili9486
 
 #ifdef __cplusplus
