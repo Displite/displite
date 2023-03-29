@@ -1,7 +1,7 @@
 #ifndef _GUI_H_
 #define _GUI_H_
 
-#include "ui.h"
+#include "interface.h"
 #include "displays/ili9486.h"
 
 #ifdef __cplusplus
@@ -10,18 +10,16 @@ extern "C" {
 
 #define GUI_PREFERRED_ROTATION 1
 
-namespace ui {
-    class portar: public ui {
-        public:
-        portar(lv_disp_t *);
-    };
-}
+class portar: public interface::gui {
+    public:
+    portar(const lv_disp_t *);
+};
 
 
 
 
 // Do not modify
-#define GUI_CLS ui::portar
+#define GUI_CLS portar
 #define DSP_DRV_CLS display::ili9486
 
 #ifdef __cplusplus

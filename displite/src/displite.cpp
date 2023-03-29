@@ -4,13 +4,13 @@
 #include "millis.h"
 #include "pico/multicore.h"
 #include "lvgl/lvgl.h"
-#include "ui.h"
+#include "interface.h"
 #include "gui.h"
 #include "displays/display.h"
 #include "hardware/watchdog.h"
 
 static unsigned short blink_interval_ms = usbstate::not_mounted;
-ui::ui *ui_class;
+interface::gui *gui_cls;
 display::display *dsp_drv;
 
 void tinyusb_process();
@@ -58,7 +58,7 @@ void lvgl_process() {
 	disp_drv.ver_res = ver_res;
 	lv_disp_t *disp = lv_disp_drv_register(&disp_drv);
 
-	ui_class = new GUI_CLS(disp);
+	gui_cls = new GUI_CLS(disp);
 	multicore_launch_core1(tinyusb_process);
 	while(true) {
         lv_task_handler();
@@ -94,7 +94,7 @@ void tud_mount_cb(void) { blink_interval_ms = usbstate::mounted; }
 // Invoked when device is unmounted
 void tud_umount_cb(void) { 
 	blink_interval_ms = usbstate::not_mounted; 
-	ui_class->show_splash_page();
+	gui_cls->show_splash_page();
 }
 
 // Invoked when usb bus is suspended
@@ -103,7 +103,7 @@ void tud_umount_cb(void) {
 void tud_suspend_cb(bool remote_wakeup_en) {
 	(void)remote_wakeup_en;
 	blink_interval_ms = usbstate::suspended;
-	ui_class->show_splash_page();
+	gui_cls->show_splash_page();
 }
 
 // Invoked when usb bus is resumed
@@ -155,15 +155,15 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 			watchdog_reboot(0, 0, 100);
 			break;
 		case 'g':
-			result = ui_class->get_pages();
+			result = gui_cls->get_pages();
 			tud_hid_report(0, result.c_str(), result.size());
 			break;
 		case 'c':
-			result = ui_class->get_active_page();
+			result = gui_cls->get_active_page();
 			tud_hid_report(0, result.c_str(), result.size());
 			break;
 		case 'p':
-			result = ui_class->set_active_page(data) ? "1" : "0";
+			result = gui_cls->set_active_page(data) ? "1" : "0";
 			tud_hid_report(0, result.c_str(), result.size());
 		default:
 			tud_hid_report(0, "0", 1);
