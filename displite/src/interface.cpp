@@ -1,8 +1,8 @@
-#include "ui.h"
+#include "interface.h"
 
 LV_IMG_DECLARE(displite_400_img)
 
-namespace ui {
+namespace interface {
 
     class splash_screen: public page {
         public:
@@ -48,26 +48,26 @@ namespace ui {
         return parent_object;
     }
 
-    ui::ui(const lv_disp_t * dsp) {
+    gui::gui(const lv_disp_t * dsp) {
         splash_screen *ss = new splash_screen(dsp->driver->hor_res, dsp->driver->ver_res);
         page_list[ss->PAGE_ID] = ss;
         show_splash_page();
     }
 
-    void ui::show_splash_page() {
+    void gui::show_splash_page() {
         set_active_page("SS");
     }
 
-    std::string ui::get_active_page() {
+    std::string gui::get_active_page() {
         return current_page;
     }
 
-    void ui::insert_page(page *new_page) {
+    void gui::insert_page(page *new_page) {
         if(new_page->PAGE_ID == "SS") return;
         page_list[new_page->PAGE_ID] = new_page;
     }
 
-    bool ui::set_active_page(std::string page_id) {
+    bool gui::set_active_page(std::string page_id) {
         if(page_id == current_page) return true;
 
         if(page_list.find(page_id) == page_list.end()) return false;
@@ -84,7 +84,7 @@ namespace ui {
         return true;
     }
 
-    std::string ui::get_pages() {
+    std::string gui::get_pages() {
         std::string result = "";
         for(auto i: page_list) {
             result += i.first + ";";
@@ -92,7 +92,7 @@ namespace ui {
         return result;
     }
 
-    void ui::send_data(std::string &data) {
+    void gui::send_data(std::string &data) {
         page *curr_page = page_list.at(current_page);
         curr_page->refresh(data);
     }

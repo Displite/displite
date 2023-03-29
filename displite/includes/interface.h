@@ -1,5 +1,5 @@
-#ifndef _UI_H_
-#define _UI_H_
+#ifndef _INTERFACE_H_
+#define _INTERFACE_H_
 
 #include <map>
 #include "lvgl/lvgl.h"
@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-namespace ui {
+namespace interface {
     class page {
         protected:
         const short hor_px;
@@ -23,14 +23,14 @@ namespace ui {
         virtual void refresh(std::string &data) = 0;
     };
 
-    class ui {
+    class gui {
         private:
         std::map<std::string, page*> page_list;
         std::string current_page = "";
         protected:
         void insert_page(page *);
         public:
-        ui(const lv_disp_t *);
+        gui(const lv_disp_t *);
         std::string get_active_page();
         bool set_active_page(std::string);
         std::string get_pages();
