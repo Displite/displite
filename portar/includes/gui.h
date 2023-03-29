@@ -12,7 +12,7 @@ extern "C" {
 
 class portar: public interface::gui {
     public:
-    portar(lv_disp_t *);
+    portar(const lv_disp_t *);
 };
 
 

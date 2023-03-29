@@ -38,7 +38,7 @@ class perf: public interface::page {
     }
 };
 
-portar::portar(lv_disp_t *dsp): interface::gui(dsp) {
+portar::portar(const lv_disp_t *dsp): interface::gui(dsp) {
     interface::page *pf_page = new perf(dsp->driver->hor_res, dsp->driver->ver_res);
     this->insert_page(pf_page);
 }
