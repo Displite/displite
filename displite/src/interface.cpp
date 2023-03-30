@@ -20,7 +20,7 @@ namespace interface {
             lv_obj_t * img1 = lv_img_create(parent_object);
             lv_img_set_src(img1, &displite_400_img);
             if(hor_px < 400) {
-                short reduction_factor{((hor_px - 20)*256)/400};
+                short reduction_factor{static_cast<short>(((hor_px - 20)*256)/400)};
                 lv_img_set_zoom(img1, reduction_factor);
             }
             lv_obj_align(img1, LV_ALIGN_CENTER, 0 , 0);
