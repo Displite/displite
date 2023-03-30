@@ -14,7 +14,19 @@ HOMEPAGE_URL "https://github.com/displite/displite"
 # initialize the Raspberry Pi Pico SDK
 pico_sdk_init()
 
-include(portar/portar.cmake)
+SET(USE_GUI "NULL" CACHE STRING "GUI to use")
+
+execute_process(COMMAND python3 "${CMAKE_SOURCE_DIR}/configure.py" "gui_util" OUTPUT_VARIABLE AVAILABLE_GUI OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_STRIP_TRAILING_WHITESPACE)
+
+if(NOT USE_GUI IN_LIST AVAILABLE_GUI)
+message(FATAL_ERROR "GUI: ${USE_GUI} is not a valid option.\nAvailable GUI's: ${AVAILABLE_GUI}")
+endif()
+
+execute_process(COMMAND python3 "${CMAKE_SOURCE_DIR}/configure.py" "gui_util" "path=${USE_GUI}" OUTPUT_VARIABLE USE_GUI_PATH OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_STRIP_TRAILING_WHITESPACE)
+
+include("${USE_GUI_PATH}/${USE_GUI}.cmake")
+
+message(STATUS "using GUI: ${USE_GUI}")
 
 set(EXE_NAME "displite_${GUI_NAME}")
 
@@ -39,10 +51,10 @@ ${MAIN_SRCS}
 ${GUI_SRCS}
 )
 
-string(TOUPPER ${GUI_DISPLAY} USE_DISPLAY_DRIVER)
+string(TOUPPER "USE_${GUI_DISPLAY}" USE_DISPLAY_DRIVER)
 
 target_compile_definitions(${EXE_NAME}
-PUBLIC "USE_${USE_DISPLAY_DRIVER}"
+PUBLIC "${USE_DISPLAY_DRIVER}"
 PUBLIC PRODUCT_NAME="${GUI_NAME}"
 )
 
