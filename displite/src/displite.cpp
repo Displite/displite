@@ -19,8 +19,8 @@ void led_blinking_task();
 void display_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p);
 
 int main() {
-	lv_init();
     stdio_init_all();
+	lv_init();
     sleep_ms(250); // core1 hanging when there's no delay
     lvgl_process();
     return 0;
