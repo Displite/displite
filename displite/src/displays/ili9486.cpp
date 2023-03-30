@@ -33,8 +33,8 @@ namespace display {
     void ili9486::data16(const uint16_t &d) {
         chip_select(true);
         gpio_put(DATA_OR_COMMAND, true);
-        const uint8_t x{d >> 8};
-        const uint8_t y{d & 0xFF};
+        const uint8_t x{static_cast<char>(d >> 8)};
+        const uint8_t y{static_cast<char>(d & 0xFF)};
         spi_write_blocking(this->SPI_P, &x, 1);
         spi_write_blocking(this->SPI_P, &y, 1);
         chip_select(false);
