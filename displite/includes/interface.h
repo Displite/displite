@@ -26,7 +26,7 @@ namespace interface {
     class gui {
         private:
         std::map<std::string, page*> page_list;
-        std::string current_page = "";
+        page *current_page = nullptr;
         protected:
         void insert_page(page *);
         public:

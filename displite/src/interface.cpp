@@ -20,7 +20,7 @@ namespace interface {
             lv_obj_t * img1 = lv_img_create(parent_object);
             lv_img_set_src(img1, &displite_400_img);
             if(hor_px < 400) {
-                short reduction_factor{static_cast<short>(((hor_px - 20)*256)/400)};
+                short reduction_factor{((hor_px - 20)*256)/400};
                 lv_img_set_zoom(img1, reduction_factor);
             }
             lv_obj_align(img1, LV_ALIGN_CENTER, 0 , 0);
@@ -59,7 +59,7 @@ namespace interface {
     }
 
     std::string gui::get_active_page() {
-        return current_page;
+        return current_page->PAGE_ID;
     }
 
     void gui::insert_page(page *new_page) {
@@ -68,7 +68,7 @@ namespace interface {
     }
 
     bool gui::set_active_page(std::string page_id) {
-        if(page_id == current_page) return true;
+        if(page_id == current_page->PAGE_ID) return true;
 
         if(page_list.find(page_id) == page_list.end()) return false;
 
@@ -76,11 +76,12 @@ namespace interface {
 
         lv_scr_load(next_page->get());
 
-        if(current_page != "") {
-            page *prev_page = page_list.at(current_page);
-            prev_page->deinit();
+        if(current_page != nullptr) {
+            current_page->deinit();
         }
-        current_page = page_id;
+
+        current_page = next_page;
+
         return true;
     }
 
@@ -93,8 +94,7 @@ namespace interface {
     }
 
     void gui::send_data(std::string &data) {
-        page *curr_page = page_list.at(current_page);
-        curr_page->refresh(data);
+        current_page->refresh(data);
     }
 
 }
