@@ -1,0 +1,7 @@
+[submodule "clib/pico-sdk"]
+	path = clib/pico-sdk
+	url = https://github.com/raspberrypi/pico-sdk.git
+[submodule "clib/lvgl"]
+	path = clib/lvgl
+	url = https://github.com/lvgl/lvgl.git
+	branch = release/v8.3
