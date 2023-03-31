@@ -24,7 +24,7 @@ endif()
 
 execute_process(COMMAND python3 "${CMAKE_SOURCE_DIR}/configure.py" "gui_util" "path=${USE_GUI}" OUTPUT_VARIABLE USE_GUI_PATH OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_STRIP_TRAILING_WHITESPACE)
 
-include("${USE_GUI_PATH}/${USE_GUI}.cmake")
+include("${USE_GUI_PATH}/gui.cmake")
 
 message(STATUS "using GUI: ${USE_GUI}")
 
