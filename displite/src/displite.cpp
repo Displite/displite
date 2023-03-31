@@ -39,7 +39,7 @@ void tinyusb_process() {
 }
 
 void lvgl_process() {
-	dsp_drv = new DSP_DRV_CLS(spi0, 17, 20, 19, 18, 21);
+	dsp_drv = new DSP_DRV_CLS(spi0, 17, 20, 19, 18, 21, 0);
 	unsigned short hor_res{};
 	unsigned short ver_res{};
 	dsp_drv->rotate(GUI_PREFERRED_ROTATION);
@@ -58,7 +58,12 @@ void lvgl_process() {
 	disp_drv.ver_res = ver_res;
 	lv_disp_t *disp = lv_disp_drv_register(&disp_drv);
 
-	gui_cls = new GUI_CLS(disp);
+	#ifdef PREFERRED_THEME
+		lv_theme_t * th = PREFERRED_THEME(disp);
+		lv_disp_set_theme(disp, th);
+	#endif
+
+	gui_cls = new GUI_CLS(hor_res, ver_res);
 	multicore_launch_core1(tinyusb_process);
 	while(true) {
         lv_task_handler();

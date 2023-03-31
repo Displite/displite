@@ -5,8 +5,11 @@ LV_IMG_DECLARE(displite_400_img)
 namespace interface {
 
     class splash_screen: public page {
+        protected:
+        const short hor_px;
+        const short ver_px;
         public:
-        splash_screen(short hor_px, short ver_px): page("SS", hor_px, ver_px) {
+        splash_screen(short hor_px, short ver_px): page("SS"), hor_px{hor_px}, ver_px{ver_px}  {
 
         }
 
@@ -31,7 +34,7 @@ namespace interface {
         }
     };
 
-    page::page(std::string page_id, short hor_px, short ver_px) : PAGE_ID{page_id}, hor_px{hor_px}, ver_px{ver_px} {
+    page::page(std::string page_id) : PAGE_ID{page_id} {
 
     }
 
@@ -48,8 +51,8 @@ namespace interface {
         return parent_object;
     }
 
-    gui::gui(const lv_disp_t * dsp) {
-        splash_screen *ss = new splash_screen(dsp->driver->hor_res, dsp->driver->ver_res);
+    gui::gui(short hor_res, short ver_res) {
+        splash_screen *ss = new splash_screen(hor_res, ver_res);
         page_list[ss->PAGE_ID] = ss;
         show_splash_page();
     }

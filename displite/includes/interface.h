@@ -11,12 +11,10 @@ extern "C" {
 namespace interface {
     class page {
         protected:
-        const short hor_px;
-        const short ver_px;
         lv_obj_t *parent_object = nullptr;
         public:
         const std::string PAGE_ID;
-        page(std::string, short, short);
+        page(std::string);
         virtual void init() = 0;
         void deinit();
         lv_obj_t * get();
@@ -30,7 +28,7 @@ namespace interface {
         protected:
         void insert_page(page *);
         public:
-        gui(const lv_disp_t *);
+        gui(short, short);
         std::string get_active_page();
         bool set_active_page(std::string);
         std::string get_pages();
