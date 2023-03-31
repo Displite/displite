@@ -68,3 +68,8 @@ hardware_spi
 hardware_watchdog
 lvgl
 )
+
+pico_enable_stdio_uart(${EXE_NAME} 1)
+pico_enable_stdio_usb(${EXE_NAME} 0)
+
+pico_add_extra_outputs(${EXE_NAME})
