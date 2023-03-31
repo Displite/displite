@@ -39,7 +39,14 @@ void tinyusb_process() {
 }
 
 void lvgl_process() {
-	dsp_drv = new DSP_DRV_CLS(spi0, 17, 20, 19, 18, 21, 0);
+	/*
+	╔══════╦═════════════╦══════════════╦════════════╦══════════════╦═══════╦═══════════╗
+	║ spi  ║ chip select ║ data/command ║ serial out ║ signal clock ║ reset ║ backlight ║
+	╠══════╬═════════════╬══════════════╬════════════╬══════════════╬═══════╬═══════════╣
+	║ spi0 ║     17      ║      20      ║     19     ║      18      ║  21   ║    22     ║
+	╚══════╩═════════════╩══════════════╩════════════╩══════════════╩═══════╩═══════════╝
+	*/
+	dsp_drv = new DSP_DRV_CLS(spi0, 17, 20, 19, 18, 21, 22);
 	unsigned short hor_res{};
 	unsigned short ver_res{};
 	dsp_drv->rotate(GUI_PREFERRED_ROTATION);
