@@ -1,0 +1,8 @@
+function(proper_case input_str output_str)
+    string(TOLOWER ${input_str} input_str)
+    string(SUBSTRING ${input_str} 0 1 FIRST_CHAR)
+    string(TOUPPER ${FIRST_CHAR} FIRST_CHAR)
+    string(SUBSTRING ${input_str} 1 -1 REST_CHAR)
+    string(CONCAT PDT_NAME ${FIRST_CHAR} ${REST_CHAR})
+    set(${output_str} "${PDT_NAME}" PARENT_SCOPE)
+endfunction(proper_case)
