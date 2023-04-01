@@ -18,7 +18,7 @@ namespace interface {
         virtual void init() = 0;
         void deinit();
         lv_obj_t * get();
-        virtual void refresh(const uint8_t *, uint16_t) = 0;
+        virtual void refresh(uint8_t const *, uint16_t) = 0;
     };
 
     class gui {
@@ -32,7 +32,7 @@ namespace interface {
         virtual std::string get_active_page() final;
         virtual bool set_active_page(std::string) final;
         virtual std::string get_pages() final;
-        virtual void send_data(const uint8_t *, uint16_t) final;
+        virtual void send_data(uint8_t const *, uint16_t) final;
         virtual void show_splash_page() final;
     };
 }

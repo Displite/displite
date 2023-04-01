@@ -29,8 +29,8 @@ namespace interface {
             lv_obj_align(img1, LV_ALIGN_CENTER, 0 , 0);
         }
 
-        void refresh(const uint8_t *buffer, uint16_t bufsize) {
-
+        void refresh(uint8_t const *buffer, uint16_t bufsize) {
+            
         }
     };
 
@@ -96,7 +96,7 @@ namespace interface {
         return result;
     }
 
-    void gui::send_data(const uint8_t *buffer, uint16_t bufsize) {
+    void gui::send_data(uint8_t const *buffer, uint16_t bufsize) {
         current_page->refresh(buffer, bufsize);
     }
 
