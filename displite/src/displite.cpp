@@ -159,24 +159,34 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 
 	uint8_t command = buffer[0];
 	buffer++;
-	std::string data(buffer, buffer+(bufsize-1));
 	std::string result = "";
 	switch(command) {
-		case 'r':
+		case 'r': {
 			tud_hid_report(0, "1", 1);
 			watchdog_reboot(0, 0, 100);
 			break;
-		case 'g':
+		}
+		case 'g': {
 			result = gui_cls->get_pages();
 			tud_hid_report(0, result.c_str(), result.size());
 			break;
-		case 'c':
+		}
+		case 'c': {
 			result = gui_cls->get_active_page();
 			tud_hid_report(0, result.c_str(), result.size());
 			break;
-		case 'p':
+		}
+		case 'p': {
+			std::string data(buffer, buffer+ (bufsize - 1));
 			result = gui_cls->set_active_page(data) ? "1" : "0";
 			tud_hid_report(0, result.c_str(), result.size());
+			break;
+		}
+		case 'd': {
+			tud_hid_report(0, "1", 1);
+			gui_cls->send_data(buffer, bufsize-1);
+			break;
+		}
 		default:
 			tud_hid_report(0, "0", 1);
 	}
