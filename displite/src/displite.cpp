@@ -9,6 +9,10 @@
 #include "displays/display.h"
 #include "hardware/watchdog.h"
 
+#ifndef PRODUCT_VERSION
+	#define PRODUCT_VERSION "undefined"
+#endif
+
 static unsigned short blink_interval_ms = usbstate::not_mounted;
 interface::gui *gui_cls;
 display::display *dsp_drv;
@@ -185,6 +189,10 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 		case 'd': {
 			tud_hid_report(0, "1", 1);
 			gui_cls->send_data(buffer, bufsize-1);
+			break;
+		}
+		case 'v': {
+			tud_hid_report(0, PRODUCT_VERSION, sizeof(PRODUCT_VERSION));
 			break;
 		}
 		default:
