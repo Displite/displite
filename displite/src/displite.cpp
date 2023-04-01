@@ -8,6 +8,11 @@
 #include "gui.h"
 #include "displays/display.h"
 #include "hardware/watchdog.h"
+#include "pico/binary_info.h"
+
+#ifndef MAJOR_VERSION
+	#define MAJOR_VERSION "UNDEFINED"
+#endif
 
 static unsigned short blink_interval_ms = usbstate::not_mounted;
 interface::gui *gui_cls;
@@ -47,6 +52,10 @@ void lvgl_process() {
 	╚══════╩═════════════╩══════════════╩════════════╩══════════════╩═══════╩═══════════╝
 	*/
 	dsp_drv = new DSP_DRV_CLS(spi0, 17, 20, 19, 18, 21, 22);
+	bi_decl(bi_3pins_with_func(17, 18, 19, GPIO_FUNC_SPI));
+	bi_decl(bi_1pin_with_name(20, "Data/Command"));
+	bi_decl(bi_1pin_with_name(21, "Reset"));
+	bi_decl(bi_1pin_with_name(22, "Back Light"));
 	unsigned short hor_res{};
 	unsigned short ver_res{};
 	dsp_drv->rotate(GUI_PREFERRED_ROTATION);
@@ -185,6 +194,10 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 		case 'd': {
 			tud_hid_report(0, "1", 1);
 			gui_cls->send_data(buffer, bufsize-1);
+			break;
+		}
+		case 'v': {
+			tud_hid_report(0, MAJOR_VERSION, sizeof(MAJOR_VERSION));
 			break;
 		}
 		default:

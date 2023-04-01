@@ -1,0 +1,15 @@
+function(proper_case str_arg output_var)
+    string(TOLOWER ${str_arg} str_arg)
+    string(SUBSTRING ${str_arg} 0 1 FIRST_CHAR)
+    string(TOUPPER ${FIRST_CHAR} FIRST_CHAR)
+    string(SUBSTRING ${str_arg} 1 -1 REST_CHARS)
+    string(CONCAT RESULT ${FIRST_CHAR} ${REST_CHARS})
+    set(${output_var} ${RESULT} PARENT_SCOPE)
+endfunction(proper_case)
+
+function(get_major_version version)
+    string(REPLACE "." ";" VERSION_LIST ${CMAKE_PROJECT_VERSION})
+    list(GET VERSION_LIST 0 MAJOR_VERSION)
+    set(${version} ${MAJOR_VERSION} PARENT_SCOPE)
+endfunction(get_major_version)
+
