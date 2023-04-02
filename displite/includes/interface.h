@@ -30,7 +30,7 @@ namespace interface {
         public:
         gui(short, short);
         virtual std::string get_active_page() final;
-        virtual bool set_active_page(std::string) final;
+        virtual bool set_active_page(std::string &) final;
         virtual std::string get_pages() final;
         virtual void send_data(uint8_t const *, uint16_t) final;
         virtual void show_splash_page() final;

@@ -58,7 +58,8 @@ namespace interface {
     }
 
     void gui::show_splash_page() {
-        set_active_page("SS");
+        std::string s{"SS"};
+        set_active_page(s);
     }
 
     std::string gui::get_active_page() {
@@ -70,7 +71,7 @@ namespace interface {
         page_list[new_page->PAGE_ID] = new_page;
     }
 
-    bool gui::set_active_page(std::string page_id) {
+    bool gui::set_active_page(std::string &page_id) {
         if(page_id == current_page->PAGE_ID) return true;
 
         if(page_list.find(page_id) == page_list.end()) return false;
