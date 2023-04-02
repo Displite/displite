@@ -1,7 +1,8 @@
 from pathlib import Path
 import pkgutil
+from cookiecutter.main import cookiecutter
 
-from . import Script
+from . import Script, get_project_dir
 
 class GuiUtil(Script):
 
@@ -21,9 +22,16 @@ class GuiUtil(Script):
                 print(self.guilist[kwargs["path"]])
             return
         
+        if "create" in kwargs:
+            self.create_gui_project(kwargs["create"])
+            return
+        
         result = ""
 
         for x in self.guilist:
             result += x + ";"
         
         print(result)
+    
+    def create_gui_project(self, name:str) -> None:
+        cookiecutter("https://github.com/Displite/cookiecutter_displite_gui.git", output_dir=get_project_dir(), extra_context={"project_name": name})

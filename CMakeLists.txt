@@ -11,6 +11,8 @@ DESCRIPTION "Status information via USB HID"
 HOMEPAGE_URL "https://github.com/displite/displite"
 )
 
+include(cmake/helpers.cmake)
+
 # initialize the Raspberry Pi Pico SDK
 pico_sdk_init()
 
@@ -51,11 +53,15 @@ ${MAIN_SRCS}
 ${GUI_SRCS}
 )
 
+proper_case(${GUI_NAME} PRODUCT_NAME)
+
 string(TOUPPER "USE_${GUI_DISPLAY}" USE_DISPLAY_DRIVER)
 
 target_compile_definitions(${EXE_NAME}
 PUBLIC "${USE_DISPLAY_DRIVER}"
-PUBLIC PRODUCT_NAME="${GUI_NAME}"
+PUBLIC PRODUCT_NAME="${PRODUCT_NAME}"
+PUBLIC PRODUCT_VERSION="${GUI_VERSION}"
+PUBLIC PICO_NO_BINARY_INFO=1
 )
 
 target_link_libraries(${EXE_NAME}
@@ -68,3 +74,8 @@ hardware_spi
 hardware_watchdog
 lvgl
 )
+
+pico_enable_stdio_uart(${EXE_NAME} 1)
+pico_enable_stdio_usb(${EXE_NAME} 0)
+
+pico_add_extra_outputs(${EXE_NAME})

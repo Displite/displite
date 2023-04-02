@@ -5,8 +5,11 @@ LV_IMG_DECLARE(displite_400_img)
 namespace interface {
 
     class splash_screen: public page {
+        protected:
+        const short hor_px;
+        const short ver_px;
         public:
-        splash_screen(short hor_px, short ver_px): page("SS", hor_px, ver_px) {
+        splash_screen(short hor_px, short ver_px): page("SS"), hor_px{hor_px}, ver_px{ver_px}  {
 
         }
 
@@ -26,12 +29,12 @@ namespace interface {
             lv_obj_align(img1, LV_ALIGN_CENTER, 0 , 0);
         }
 
-        void refresh(std::string &data) {
-
+        void refresh(uint8_t const *buffer, uint16_t bufsize) {
+            
         }
     };
 
-    page::page(std::string page_id, short hor_px, short ver_px) : PAGE_ID{page_id}, hor_px{hor_px}, ver_px{ver_px} {
+    page::page(std::string page_id) : PAGE_ID{page_id} {
 
     }
 
@@ -48,14 +51,15 @@ namespace interface {
         return parent_object;
     }
 
-    gui::gui(const lv_disp_t * dsp) {
-        splash_screen *ss = new splash_screen(dsp->driver->hor_res, dsp->driver->ver_res);
+    gui::gui(short hor_res, short ver_res) {
+        splash_screen *ss = new splash_screen(hor_res, ver_res);
         page_list[ss->PAGE_ID] = ss;
         show_splash_page();
     }
 
     void gui::show_splash_page() {
-        set_active_page("SS");
+        std::string s{"SS"};
+        set_active_page(s);
     }
 
     std::string gui::get_active_page() {
@@ -67,7 +71,7 @@ namespace interface {
         page_list[new_page->PAGE_ID] = new_page;
     }
 
-    bool gui::set_active_page(std::string page_id) {
+    bool gui::set_active_page(std::string &page_id) {
         if(page_id == current_page->PAGE_ID) return true;
 
         if(page_list.find(page_id) == page_list.end()) return false;
@@ -93,8 +97,8 @@ namespace interface {
         return result;
     }
 
-    void gui::send_data(std::string &data) {
-        current_page->refresh(data);
+    void gui::send_data(uint8_t const *buffer, uint16_t bufsize) {
+        current_page->refresh(buffer, bufsize);
     }
 
 }
