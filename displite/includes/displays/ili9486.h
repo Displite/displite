@@ -23,7 +23,7 @@ namespace display {
         void data16(const uint16_t &);
         void rotate(short);
         void get_display_size(unsigned short &, unsigned short &);
-        void flush_pixels(lv_disp_drv_t *, const lv_area_t *, lv_color_t *);
+        void flush_pixels(const area &, lv_color_t *);
 
         protected:
         // https://github.com/Bodmer/TFT_eSPI/blob/master/TFT_Drivers/ILI9486_Init.h
