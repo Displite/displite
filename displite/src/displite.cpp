@@ -8,6 +8,7 @@
 #include "gui.h"
 #include "displays/display.h"
 #include "hardware/watchdog.h"
+#include "pico/util/queue.h"
 
 #ifndef PRODUCT_VERSION
 	#define PRODUCT_VERSION "undefined"
@@ -16,33 +17,28 @@
 static unsigned short blink_interval_ms = usbstate::not_mounted;
 interface::gui *gui_cls;
 display::display *dsp_drv;
+queue_t sample_fifo;
+lv_disp_drv_t *disp_lv; 
+lv_color_t *color_p_lv;
+
 
 void tinyusb_process();
-void lvgl_process();
-void led_blinking_task();
+void display_flush_process();
 void display_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p);
 
 int main() {
     stdio_init_all();
 	lv_init();
+	queue_init(&sample_fifo, sizeof(display::area), 32);
     sleep_ms(250); // core1 hanging when there's no delay
-    lvgl_process();
+    tinyusb_process();
     return 0;
 }
 
 void tinyusb_process() {
 	gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
-
     tusb_init();
-
-    while (true) {
-		tud_task();
-		led_blinking_task();
-	}
-}
-
-void lvgl_process() {
 	/*
 	╔══════╦═════════════╦══════════════╦════════════╦══════════════╦═══════╦═══════════╗
 	║ spi  ║ chip select ║ data/command ║ serial out ║ signal clock ║ reset ║ backlight ║
@@ -75,29 +71,41 @@ void lvgl_process() {
 	#endif
 
 	gui_cls = new GUI_CLS(hor_res, ver_res);
-	multicore_launch_core1(tinyusb_process);
-	while(true) {
-        lv_task_handler();
-		lv_timer_handler();
-		sleep_ms(5);
-    }
+	multicore_launch_core1(display_flush_process);
+	static bool led_state = false;
 
-    delete dsp_drv;
+	unsigned int prev_lvgl_ms, prev_led_ms, current_ms;
+	prev_lvgl_ms = prev_led_ms = current_ms = millis();
+
+    while (true) {
+		tud_task();
+		current_ms = millis();
+		if(current_ms - prev_lvgl_ms > 5) {
+			lv_task_handler();
+			lv_timer_handler();
+			prev_lvgl_ms = current_ms;
+		}
+
+		if(current_ms - prev_led_ms > blink_interval_ms) {
+			gpio_put(PICO_DEFAULT_LED_PIN, led_state);
+			led_state = 1 - led_state; // toggle
+			prev_led_ms = current_ms;
+		}
+	}
+
+	delete dsp_drv;
     dsp_drv = nullptr;
 }
 
-void led_blinking_task() {
-    static unsigned long start_ms = 0;
-	static bool led_state = false;
+void display_flush_process() {
+	
+	while(true) {
+        display::area element;
+		queue_remove_blocking(&sample_fifo, &element);
+		dsp_drv->flush_pixels(element, color_p_lv);
+		lv_disp_flush_ready(disp_lv);
+    }
 
-	// Blink every interval ms
-	if (millis() - start_ms < blink_interval_ms)
-		return; // not enough time
-	start_ms += blink_interval_ms;
-    // printf("toggled\n");
-
-	gpio_put(PICO_DEFAULT_LED_PIN, led_state);
-	led_state = 1 - led_state; // toggle
 }
 
 //--------------------------------------------------------------------+
@@ -201,5 +209,25 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 }
 
 void display_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
-    dsp_drv->flush_pixels(disp, area, color_p);
+	if (area->x2 < 0 || area->y2 < 0 || area->x1 > (disp->hor_res - 1) || area->y1 > (disp->ver_res - 1)) {
+		lv_disp_flush_ready(disp);
+		return;
+    }
+
+	/* Truncate the area to the screen */
+	int32_t act_x1 = area->x1 < 0 ? 0 : area->x1;
+	int32_t act_y1 = area->y1 < 0 ? 0 : area->y1;
+	int32_t act_x2 = area->x2 > disp->hor_res - 1 ? disp->hor_res - 1 : area->x2;
+	int32_t act_y2 = area->y2 > disp->ver_res - 1 ? disp->ver_res - 1 : area->y2;
+
+	display::area flush_area_lv {
+		act_x1,
+		act_y1,
+		act_x2,
+		act_y2
+	};
+
+	disp_lv = disp;
+	color_p_lv = color_p;
+	queue_add_blocking(&sample_fifo, &flush_area_lv);
 }
