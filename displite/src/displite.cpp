@@ -10,8 +10,8 @@
 #include "hardware/watchdog.h"
 #include "pico/util/queue.h"
 
-#ifndef PRODUCT_VERSION
-	#define PRODUCT_VERSION "undefined"
+#ifndef DISPLITE_INFORMATION
+	#define DISPLITE_INFORMATION "undefined"
 #endif
 
 static unsigned short blink_interval_ms = usbstate::not_mounted;
@@ -199,8 +199,8 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 			gui_cls->send_data(buffer, bufsize-1);
 			break;
 		}
-		case 'v': {
-			tud_hid_report(0, PRODUCT_VERSION, sizeof(PRODUCT_VERSION));
+		case 'i': { 
+			tud_hid_report(0, DISPLITE_INFORMATION, sizeof(DISPLITE_INFORMATION));
 			break;
 		}
 		default:
