@@ -208,8 +208,12 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 			break;
 		}
 		case 'd': {
-			tud_hid_report(0, "1", 1);
-			gui_cls->send_data(buffer, bufsize-1);
+			if(bufsize-1 < 1) {
+				tud_hid_report(0, "0", 1);
+			} else {
+				tud_hid_report(0, "1", 1);
+				gui_cls->send_data(buffer, bufsize-1);
+			}
 			break;
 		}
 		case 'i': { 
