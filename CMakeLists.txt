@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 include(clib/pico-sdk/pico_sdk_init.cmake)
 
 project(displite 
-VERSION 0.1
+VERSION 0.2
 DESCRIPTION "Status information via USB HID"
 HOMEPAGE_URL "https://github.com/displite/displite"
 )
