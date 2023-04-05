@@ -1,6 +1,7 @@
 from pathlib import Path
 import pkgutil
 from cookiecutter.main import cookiecutter
+import importlib
 
 from . import Script, get_project_dir
 
@@ -11,19 +12,20 @@ class GuiUtil(Script):
         self.guilist = {}
 
     def run(self, **kwargs):
+        if "create" in kwargs:
+            self.create_gui_project(kwargs["create"])
+            return
+
         for module, name, ispkg in pkgutil.iter_modules():
             if name.startswith("displite_"):
-                pkg_path = Path(module.path) / name
-                if (pkg_path / "gui.h").exists() and (pkg_path / "gui.h").is_file():
+                temp_module = importlib.import_module(f"{name}")
+                temp_type = getattr(temp_module, "TYPE", None)
+                if(temp_type == "GUI"):
                     self.guilist[name[9:]] = str(Path(module.path) / name)
         
         if "path" in kwargs:
             if kwargs["path"] in self.guilist:
                 print(self.guilist[kwargs["path"]])
-            return
-        
-        if "create" in kwargs:
-            self.create_gui_project(kwargs["create"])
             return
         
         result = ""

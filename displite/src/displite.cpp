@@ -5,23 +5,35 @@
 #include "pico/multicore.h"
 #include "lvgl/lvgl.h"
 #include "interface.h"
-#include "gui.h"
 #include "displays/display.h"
 #include "hardware/watchdog.h"
 #include "pico/util/queue.h"
 #include "pico/bootrom.h"
 
+#ifndef GUI_HEADER
+	#error GUI Header not defined
+#else
+	#include GUI_HEADER
+#endif
+
 #ifndef DISPLITE_INFORMATION
 	#define DISPLITE_INFORMATION "undefined"
 #endif
 
-static unsigned short blink_interval_ms = usbstate::not_mounted;
+/*-------------
+ * Globals
+ *-----------*/
+
 interface::gui *gui_cls;
 display::display *dsp_drv;
 queue_t sample_fifo;
 lv_disp_drv_t *disp_lv; 
 lv_color_t *color_p_lv;
+static unsigned short blink_interval_ms = usbstate::not_mounted;
 
+/*-------------
+ * Forward declarations
+ *-----------*/
 
 void tinyusb_process();
 void display_flush_process();

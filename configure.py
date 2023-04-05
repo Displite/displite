@@ -4,10 +4,13 @@ import importlib
 from pkgutil import iter_modules
 import scripts
 from scripts.console import Console, Color
-from jinja2_strcase import jinja2_strcase
+import re
 
 registered_scripts = {}
 help_text = "scripts:\n"
+
+def to_camel(string: str) -> str:
+    return re.sub(r"(?:^|_)(.)", lambda m: m.group(1).upper(), string)
 
 def load_scripts():
     global help_text
@@ -16,7 +19,7 @@ def load_scripts():
             continue
 
         temp_module = importlib.import_module(f"scripts.{module.name}")
-        temp_class = getattr(temp_module, jinja2_strcase.to_camel(module.name), None)
+        temp_class = getattr(temp_module, to_camel(module.name), None)
 
         if temp_class is None or not isinstance(temp_class, type):
             continue
