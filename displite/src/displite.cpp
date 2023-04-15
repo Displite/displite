@@ -43,7 +43,6 @@ int main() {
     stdio_init_all();
 	lv_init();
 	queue_init(&sample_fifo, sizeof(display::area), 32);
-    sleep_ms(250); // core1 hanging when there's no delay
     tinyusb_process();
     return 0;
 }
@@ -115,6 +114,18 @@ void display_flush_process() {
 	while(true) {
         display::area element;
 		queue_remove_blocking(&sample_fifo, &element);
+
+		if (element.x2 < 0 || element.y2 < 0 || element.x1 > (disp_lv->hor_res - 1) || element.y1 > (disp_lv->ver_res - 1)) {
+			lv_disp_flush_ready(disp_lv);
+			continue;
+    	}
+
+		/* Truncate the area to the screen */
+		element.x1 = element.x1 < 0 ? 0 : element.x1;
+		element.y1 = element.y1 < 0 ? 0 : element.y1;
+		element.x2 = element.x2 > disp_lv->hor_res - 1 ? disp_lv->hor_res - 1 : element.x2;
+		element.y2 = element.y2 > disp_lv->ver_res - 1 ? disp_lv->ver_res - 1 : element.y2;
+
 		dsp_drv->flush_pixels(element, color_p_lv);
 		lv_disp_flush_ready(disp_lv);
     }
@@ -208,8 +219,12 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 			break;
 		}
 		case 'd': {
-			tud_hid_report(0, "1", 1);
-			gui_cls->send_data(buffer, bufsize-1);
+			if(bufsize-1 < 1) {
+				tud_hid_report(0, "0", 1);
+			} else {
+				tud_hid_report(0, "1", 1);
+				gui_cls->send_data(buffer, bufsize-1);
+			}
 			break;
 		}
 		case 'i': { 
@@ -226,22 +241,12 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 }
 
 void display_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
-	if (area->x2 < 0 || area->y2 < 0 || area->x1 > (disp->hor_res - 1) || area->y1 > (disp->ver_res - 1)) {
-		lv_disp_flush_ready(disp);
-		return;
-    }
-
-	/* Truncate the area to the screen */
-	int32_t act_x1 = area->x1 < 0 ? 0 : area->x1;
-	int32_t act_y1 = area->y1 < 0 ? 0 : area->y1;
-	int32_t act_x2 = area->x2 > disp->hor_res - 1 ? disp->hor_res - 1 : area->x2;
-	int32_t act_y2 = area->y2 > disp->ver_res - 1 ? disp->ver_res - 1 : area->y2;
 
 	display::area flush_area_lv {
-		act_x1,
-		act_y1,
-		act_x2,
-		act_y2
+		area->x1,
+		area->y1,
+		area->x2,
+		area->y2
 	};
 
 	disp_lv = disp;
