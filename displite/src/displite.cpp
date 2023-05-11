@@ -229,6 +229,16 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 			reset_usb_boot(PICO_DEFAULT_LED_PIN, 0);
 			break;
 		}
+		case 'b': {
+			bool new_state = true;
+			if(bufsize > 1) {
+				new_state = buffer[0] == '1';
+			}
+			dsp_drv->backlight(new_state);
+			result = new_state ? "enabled": "disabled";
+			tud_hid_report(0, result.c_str(), result.size());
+			break;
+		}
 		default:
 			tud_hid_report(0, "0", 1);
 	}
