@@ -110,6 +110,7 @@ namespace display {
 
     };
 
+    display * get_available_dsp();
 }
 
 #ifdef __cplusplus
