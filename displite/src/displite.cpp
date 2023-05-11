@@ -17,7 +17,7 @@
 #endif
 
 #ifndef DISPLITE_INFORMATION
-	#define DISPLITE_INFORMATION "undefined"
+	#error Versions not defined
 #endif
 
 /*-------------
@@ -51,17 +51,11 @@ void tinyusb_process() {
 	gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
     tusb_init();
-	/*
-	╔══════╦═════════════╦══════════════╦════════════╦══════════════╦═══════╦═══════════╗
-	║ spi  ║ chip select ║ data/command ║ serial out ║ signal clock ║ reset ║ backlight ║
-	╠══════╬═════════════╬══════════════╬════════════╬══════════════╬═══════╬═══════════╣
-	║ spi0 ║     17      ║      20      ║     19     ║      18      ║  21   ║    22     ║
-	╚══════╩═════════════╩══════════════╩════════════╩══════════════╩═══════╩═══════════╝
-	*/
-	dsp_drv = new DSP_DRV_CLS(spi0, 17, 20, 19, 18, 21, 22);
+
+	dsp_drv = display::get_available_dsp();
 	unsigned short hor_res{};
 	unsigned short ver_res{};
-	dsp_drv->rotate(GUI_PREFERRED_ROTATION);
+	dsp_drv->rotate(PREFERRED_ROTATION);
 	dsp_drv->get_display_size(hor_res, ver_res);
 
 	static lv_disp_draw_buf_t draw_buf;
