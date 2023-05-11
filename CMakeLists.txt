@@ -16,26 +16,18 @@ include(cmake/helpers.cmake)
 # initialize the Raspberry Pi Pico SDK
 pico_sdk_init()
 
-SET(USE_GUI "NULL" CACHE STRING "GUI to use")
-
-execute_process(COMMAND python3 "${CMAKE_SOURCE_DIR}/configure.py" "gui_util" OUTPUT_VARIABLE AVAILABLE_GUI OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_STRIP_TRAILING_WHITESPACE)
-
-if(NOT USE_GUI IN_LIST AVAILABLE_GUI)
-message(FATAL_ERROR "GUI: ${USE_GUI} is not a valid option.\nAvailable GUI's: ${AVAILABLE_GUI}")
-endif()
-
-execute_process(COMMAND python3 "${CMAKE_SOURCE_DIR}/configure.py" "gui_util" "path=${USE_GUI}" OUTPUT_VARIABLE USE_GUI_PATH OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_STRIP_TRAILING_WHITESPACE)
-
-include("${USE_GUI_PATH}/${USE_GUI}.cmake")
-
-message(STATUS "using GUI: ${USE_GUI}")
-
-set(EXE_NAME "displite_${GUI_NAME}")
-
 include_directories(
 "${CMAKE_CURRENT_LIST_DIR}/displite/includes"
 "${CMAKE_CURRENT_LIST_DIR}/clib"
 )
+
+SET(USE_GUI "demo" CACHE STRING "GUI to use")
+
+include("${CMAKE_CURRENT_LIST_DIR}/gui/${USE_GUI}/${USE_GUI}.cmake")
+
+message(STATUS "Using GUI: ${USE_GUI}")
+
+set(EXE_NAME "displite_${USE_GUI}")
 
 add_subdirectory(clib/lvgl)
 
@@ -53,14 +45,14 @@ ${MAIN_SRCS}
 ${GUI_SRCS}
 )
 
-proper_case(${GUI_NAME} PRODUCT_NAME)
+proper_case(${USE_GUI} PRODUCT_NAME)
 
 string(TOUPPER "USE_${GUI_DISPLAY}" USE_DISPLAY_DRIVER)
 
 target_compile_definitions(${EXE_NAME}
 PUBLIC "${USE_DISPLAY_DRIVER}"
 PUBLIC PRODUCT_NAME="${PRODUCT_NAME}"
-PUBLIC DISPLITE_INFORMATION="${CMAKE_PROJECT_VERSION};${GUI_VERSION}"
+PUBLIC DISPLITE_INFORMATION="${CMAKE_PROJECT_VERSION}\\\;${GUI_VERSION}"
 PUBLIC PICO_NO_BINARY_INFO=1
 PUBLIC GUI_HEADER="${USE_GUI}.h"
 )
