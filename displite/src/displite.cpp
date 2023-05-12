@@ -11,7 +11,7 @@
 #include "pico/bootrom.h"
 
 #ifndef GUI_HEADER
-	#error GUI Header not defined
+	#error GUI_HEADER not defined
 #else
 	#include GUI_HEADER
 #endif
