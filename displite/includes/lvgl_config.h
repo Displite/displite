@@ -20,12 +20,20 @@
 /*Images pixels with this color will not be drawn if they are chroma keyed)*/
 // #define LV_COLOR_CHROMA_KEY lv_color_hex(0x00ff00)         /*pure green*/
 
-#ifdef USE_ILI9486
+#if defined(USE_ILI9486)
     #define LV_COLOR_DEPTH 16
     #define LV_COLOR_16_SWAP 0
     #define LV_COLOR_SCREEN_TRANSP 0
     #define LV_COLOR_MIX_ROUND_OFS 0
     #define LV_COLOR_CHROMA_KEY lv_color_hex(0x00ff00)
+#elif defined(USE_ST7735)
+    #define LV_COLOR_DEPTH 16
+    #define LV_COLOR_16_SWAP 0
+    #define LV_COLOR_SCREEN_TRANSP 0
+    #define LV_COLOR_MIX_ROUND_OFS 0
+    #define LV_COLOR_CHROMA_KEY lv_color_hex(0x00ff00)
+#else
+    #error lvgl display properties not defined.
 #endif
 
 

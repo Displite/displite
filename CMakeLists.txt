@@ -26,12 +26,18 @@ SET(USE_GUI "demo" CACHE STRING "GUI to use")
 include("${CMAKE_CURRENT_LIST_DIR}/gui/${USE_GUI}/${USE_GUI}.cmake")
 
 message(STATUS "Using GUI: ${USE_GUI}")
+message(STATUS "Using display: ${GUI_DISPLAY}")
 
 set(EXE_NAME "displite_${USE_GUI}")
 
+string(TOUPPER "USE_${GUI_DISPLAY}" USE_DISPLAY_DRIVER)
+
 add_subdirectory(clib/lvgl)
 
-target_compile_definitions(lvgl PUBLIC LV_CONF_INCLUDE_SIMPLE)
+
+target_compile_definitions(lvgl PUBLIC LV_CONF_INCLUDE_SIMPLE
+PUBLIC "${USE_DISPLAY_DRIVER}"
+)
 
 file(GLOB_RECURSE MAIN_SRCS 
     ${CMAKE_CURRENT_LIST_DIR}/displite/src/*.cpp 
@@ -46,8 +52,6 @@ ${GUI_SRCS}
 )
 
 proper_case(${USE_GUI} PRODUCT_NAME)
-
-string(TOUPPER "USE_${GUI_DISPLAY}" USE_DISPLAY_DRIVER)
 
 target_compile_definitions(${EXE_NAME}
 PUBLIC "${USE_DISPLAY_DRIVER}"
