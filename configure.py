@@ -5,6 +5,7 @@ from pkgutil import iter_modules
 import scripts
 from scripts.console import Console, Color
 import re
+import sys
 
 registered_scripts = {}
 help_text = "scripts:\n"
@@ -54,6 +55,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(epilog=help_text, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("script", help="run specific utility", nargs="*")
     args = parser.parse_args()
+    
+    if not len(args.script):
+        parser.print_help()
+        sys.exit(1)
+    
     if len(args.script) < 2:
         run_script(args.script[0])
     else:
