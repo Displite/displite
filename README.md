@@ -7,6 +7,7 @@ Display information on small screen display modules using Raspberry Pi Pico.
 Supported display controllers/Modules:
 
 - ILI9486 (Tested on MPI3501 display)
+- ST7735 (Tested on generic ST7735 1.8 TFT module)
 
 ### Build Steps
 
