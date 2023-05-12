@@ -33,7 +33,7 @@
     #define LV_COLOR_MIX_ROUND_OFS 0
     #define LV_COLOR_CHROMA_KEY lv_color_hex(0x00ff00)
 #else
-    #error lvgl display properties not defined.
+    #error lvgl properties for specified display not set.
 #endif
 
 

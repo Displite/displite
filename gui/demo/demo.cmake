@@ -1,4 +1,3 @@
-set(GUI_DISPLAY "ili9486")
 set(GUI_VERSION "0.1")
 
 

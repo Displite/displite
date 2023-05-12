@@ -22,18 +22,18 @@ include_directories(
 )
 
 SET(USE_GUI "demo" CACHE STRING "GUI to use")
+SET(USE_DISPLAY "ili9486" CACHE STRING "Display driver to use")
 
 include("${CMAKE_CURRENT_LIST_DIR}/gui/${USE_GUI}/${USE_GUI}.cmake")
 
 message(STATUS "Using GUI: ${USE_GUI}")
-message(STATUS "Using display: ${GUI_DISPLAY}")
+message(STATUS "Using display: ${USE_DISPLAY}")
 
 set(EXE_NAME "displite_${USE_GUI}")
 
-string(TOUPPER "USE_${GUI_DISPLAY}" USE_DISPLAY_DRIVER)
+string(TOUPPER "USE_${USE_DISPLAY}" USE_DISPLAY_DRIVER)
 
 add_subdirectory(clib/lvgl)
-
 
 target_compile_definitions(lvgl PUBLIC LV_CONF_INCLUDE_SIMPLE
 PUBLIC "${USE_DISPLAY_DRIVER}"

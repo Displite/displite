@@ -1,4 +1,3 @@
-set(GUI_DISPLAY "{{ cookiecutter.display_driver }}")
 set(GUI_VERSION "{{ cookiecutter.project_version }}")
 
 
