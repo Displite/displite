@@ -1,6 +1,7 @@
 #include "displays/display.h"
 
 #include "displays/ili9486.h"
+#include "displays/st7735.h"
 
 /*
 ╔══════╦═════════════╦══════════════╦════════════╦══════════════╦═══════╦═══════════╗
@@ -12,9 +13,14 @@
 
 namespace display {
     display * get_available_dsp() {
-        #ifdef USE_ILI9486
+        #if defined(USE_ILI9486)
         return new ili9486(spi0, 17, 20, 19, 18, 21, 22);
+        #elif defined(USE_ST7735)
+        return new st7735(spi0, 17, 20, 19, 18, 21, 22);
+        #elif
+        #error Display driver class not defined
         #endif
+
     }
 }
 
