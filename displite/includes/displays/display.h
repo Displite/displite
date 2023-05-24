@@ -32,8 +32,11 @@ namespace display {
         const uint SIGNAL_CLOCK;
         const uint RESET;
         const uint BACKLIGHT;
+        unsigned short current_rotation{};
         public:
-        display(uint, uint, uint, uint, uint = 0, uint = 0);
+        const unsigned short HORIZONTAL_PX;
+        const unsigned short VERTICAL_PX;
+        display(uint, uint, uint, uint, uint, uint, unsigned short, unsigned short);
         void backlight(bool);
         void reset();
         void chip_select(bool);
@@ -41,9 +44,8 @@ namespace display {
         virtual void command(const uint8_t &) = 0;
         virtual void data(const uint8_t &) = 0;
         virtual void data16(const uint16_t &) = 0;
-        virtual void get_display_size(unsigned short &, unsigned short &) = 0;
         virtual void flush_pixels(const area &, lv_color_t *) = 0;
-        virtual short get_rotation() = 0;
+        short get_rotation();
         /**
          * set display orientation. 
          * 
@@ -102,7 +104,7 @@ namespace display {
         protected:
         spi_inst_t *SPI_P;
         public:
-        spi(spi_inst_t *, uint, uint, uint, uint, uint = 0, uint = 0);
+        spi(spi_inst_t *, uint, uint, uint, uint, uint, uint, unsigned short, unsigned short);
         void command(const uint8_t &);
         void data(const uint8_t &);
     };

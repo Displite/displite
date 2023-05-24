@@ -2,8 +2,9 @@
 
 namespace display {
     display::display(uint chip_select, uint data_or_command, uint serial_out, 
-    uint signal_clock, uint reset_p, uint backlight): CHIP_SELECT{chip_select}, DATA_OR_COMMAND{data_or_command}, 
-    SERIAL_DATA_OUT{serial_out}, SIGNAL_CLOCK{signal_clock}, RESET{reset_p}, BACKLIGHT{backlight} {
+    uint signal_clock, uint reset_p, uint backlight, unsigned short hor_px, unsigned short ver_px): CHIP_SELECT{chip_select}, DATA_OR_COMMAND{data_or_command}, 
+    SERIAL_DATA_OUT{serial_out}, SIGNAL_CLOCK{signal_clock}, RESET{reset_p}, BACKLIGHT{backlight}, 
+    HORIZONTAL_PX{hor_px}, VERTICAL_PX{ver_px} {
         gpio_init(CHIP_SELECT);
         gpio_set_dir(CHIP_SELECT, true);
         gpio_put(CHIP_SELECT, true);
@@ -54,9 +55,13 @@ namespace display {
         }
     }
 
+    short display::get_rotation() {
+        return current_rotation;
+    }
+
     spi::spi(spi_inst_t *spi_p, uint chip_select, uint data_or_command, 
-    uint serial_out, uint signal_clock, uint reset_p, uint backlight): SPI_P{spi_p}, 
-    display(chip_select, data_or_command, serial_out, signal_clock, reset_p, backlight) {
+    uint serial_out, uint signal_clock, uint reset_p, uint backlight, unsigned short hor_px, unsigned short ver_px): SPI_P{spi_p}, 
+    display(chip_select, data_or_command, serial_out, signal_clock, reset_p, backlight, hor_px, ver_px) {
         spi_init(SPI_P, 20000*1000);
         gpio_set_function(SERIAL_DATA_OUT, GPIO_FUNC_SPI);
         gpio_set_function(SIGNAL_CLOCK, GPIO_FUNC_SPI);
