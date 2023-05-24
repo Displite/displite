@@ -240,7 +240,7 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 			break;
 		}
 		default:
-			tud_hid_report(0, "0", 1);
+			tud_hid_report(0, "-1", 2);
 	}
 }
 
