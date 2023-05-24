@@ -4,7 +4,7 @@
 
 namespace display {
     st7735::st7735(spi_inst_t *spi_p, uint chip_select, uint data_or_command, 
-    uint serial_out, uint signal_clock, uint reset_p, uint backlight) : spi(spi_p, chip_select, data_or_command, serial_out, signal_clock, reset_p, backlight) {
+    uint serial_out, uint signal_clock, uint reset_p, uint backlight) : spi(spi_p, chip_select, data_or_command, serial_out, signal_clock, reset_p, backlight, 128, 160) {
         reset();
     }
 
@@ -52,7 +52,6 @@ namespace display {
             case 1:
                 command(MADCTL);
                 data(my | mv | (1 << 3));
-                std::swap(horizontal_px, vertical_px);
                 break;
             case 2:
                 command(MADCTL);
@@ -61,16 +60,13 @@ namespace display {
             case 3:
                 command(MADCTL);
                 data(mx | mv | (1 << 3));
-                std::swap(horizontal_px, vertical_px);
                 break;
             default:
-                break;
+                return;
         }
-    }
 
-    void st7735::get_display_size(unsigned short &h_size, unsigned short &v_size) {
-        h_size = horizontal_px;
-        v_size = vertical_px;
+        current_rotation = rotation;
+
     }
 
     void st7735::flush_pixels(const area &area, lv_color_t *color_p) {

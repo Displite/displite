@@ -11,18 +11,13 @@ extern "C" {
 
 namespace display {
     class st7735: public spi {
-        private:
-        unsigned short horizontal_px{128};
-        unsigned short vertical_px{160};
-
         public:
-        st7735(spi_inst_t *, uint, uint, uint, uint, uint = 0, uint = 0);
+        st7735(spi_inst_t *, uint, uint, uint, uint, uint, uint);
         void reset();
         void command(const uint8_t &);
         void data(const uint8_t &);
         void data16(const uint16_t &);
         void rotate(short);
-        void get_display_size(unsigned short &, unsigned short &);
         void flush_pixels(const area &, lv_color_t *);
 
         protected:
