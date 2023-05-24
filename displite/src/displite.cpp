@@ -66,6 +66,8 @@ void tinyusb_process() {
 	disp_drv.draw_buf = &draw_buf;
 	disp_drv.hor_res = dsp_drv->HORIZONTAL_PX;
 	disp_drv.ver_res = dsp_drv->VERTICAL_PX;
+	disp_drv.sw_rotate = 0;
+	disp_drv.rotated = dsp_drv->get_rotation();
 	lv_disp_t *disp = lv_disp_drv_register(&disp_drv);
 
 	#ifdef PREFERRED_THEME
@@ -242,6 +244,10 @@ void tud_hid_set_report_cb(uint8_t itf, uint8_t report_id,
 }
 
 void display_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p) {
+
+	if(disp->rotated != dsp_drv->get_rotation()) {
+		dsp_drv->rotate(disp->rotated);
+	}
 
 	display::area flush_area_lv {
 		area->x1,
