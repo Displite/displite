@@ -43,6 +43,7 @@ namespace display {
         virtual void data16(const uint16_t &) = 0;
         virtual void get_display_size(unsigned short &, unsigned short &) = 0;
         virtual void flush_pixels(const area &, lv_color_t *) = 0;
+        virtual short get_rotation() = 0;
         /**
          * set display orientation. 
          * 
