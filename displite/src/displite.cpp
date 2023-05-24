@@ -53,22 +53,19 @@ void tinyusb_process() {
     tusb_init();
 
 	dsp_drv = display::get_available_dsp();
-	unsigned short hor_res{};
-	unsigned short ver_res{};
-	dsp_drv->rotate(PREFERRED_ROTATION);
-	dsp_drv->get_display_size(hor_res, ver_res);
 
+	int buf_size{dsp_drv->HORIZONTAL_PX * dsp_drv->VERTICAL_PX / 10};
 	static lv_disp_draw_buf_t draw_buf;
-	static lv_color_t *buf1{new lv_color_t[hor_res * ver_res / 10]};
-	static lv_color_t *buf2{new lv_color_t[hor_res * ver_res / 10]};
-	lv_disp_draw_buf_init(&draw_buf, buf1, buf2, hor_res * ver_res / 10);
+	static lv_color_t *buf1{new lv_color_t[buf_size]};
+	static lv_color_t *buf2{new lv_color_t[buf_size]};
+	lv_disp_draw_buf_init(&draw_buf, buf1, buf2, buf_size);
 
 	static lv_disp_drv_t disp_drv; /*Descriptor of a display driver*/
 	lv_disp_drv_init(&disp_drv);
 	disp_drv.flush_cb = display_flush;
 	disp_drv.draw_buf = &draw_buf;
-	disp_drv.hor_res = hor_res;
-	disp_drv.ver_res = ver_res;
+	disp_drv.hor_res = dsp_drv->HORIZONTAL_PX;
+	disp_drv.ver_res = dsp_drv->VERTICAL_PX;
 	lv_disp_t *disp = lv_disp_drv_register(&disp_drv);
 
 	#ifdef PREFERRED_THEME
@@ -76,7 +73,7 @@ void tinyusb_process() {
 		lv_disp_set_theme(disp, th);
 	#endif
 
-	gui_cls = new GUI_CLS(hor_res, ver_res);
+	gui_cls = new GUI_CLS(dsp_drv->HORIZONTAL_PX, dsp_drv->VERTICAL_PX);
 	multicore_launch_core1(display_flush_process);
 	static bool led_state = false;
 
