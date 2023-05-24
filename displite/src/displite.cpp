@@ -108,17 +108,6 @@ void display_flush_process() {
         display::area element;
 		queue_remove_blocking(&sample_fifo, &element);
 
-		if (element.x2 < 0 || element.y2 < 0 || element.x1 > (disp_lv->hor_res - 1) || element.y1 > (disp_lv->ver_res - 1)) {
-			lv_disp_flush_ready(disp_lv);
-			continue;
-    	}
-
-		/* Truncate the area to the screen */
-		element.x1 = element.x1 < 0 ? 0 : element.x1;
-		element.y1 = element.y1 < 0 ? 0 : element.y1;
-		element.x2 = element.x2 > disp_lv->hor_res - 1 ? disp_lv->hor_res - 1 : element.x2;
-		element.y2 = element.y2 > disp_lv->ver_res - 1 ? disp_lv->ver_res - 1 : element.y2;
-
 		dsp_drv->flush_pixels(element, color_p_lv);
 		lv_disp_flush_ready(disp_lv);
     }
