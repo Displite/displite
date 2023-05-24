@@ -36,7 +36,7 @@ class FlashElf(Script):
         Console.pprint(f"flashing elf via openocd", Color.GREEN)
         status = subprocess.run(f'openocd -f interface/raspberrypi-swd.cfg -f target/rp2040.cfg -c "program {self.elf_path} verify reset exit"', cwd=get_project_dir(), shell=True)
 
-        if not status.returncode:
+        if status.returncode:
             Console.pprint("elf could not be flashed", Color.RED)
         else:
             Console.pprint(f"flashing complete", Color.GREEN)
