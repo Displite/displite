@@ -4,7 +4,7 @@
 
 namespace display {
     ili9486::ili9486(spi_inst_t *spi_p, uint chip_select, uint data_or_command, 
-    uint serial_out, uint signal_clock, uint reset_p, uint backlight) : spi(spi_p, chip_select, data_or_command, serial_out, signal_clock, reset_p, backlight) {
+    uint serial_out, uint signal_clock, uint reset_p, uint backlight) : spi(spi_p, chip_select, data_or_command, serial_out, signal_clock, reset_p, backlight, 320, 480) {
         reset();
     }
 
@@ -49,7 +49,6 @@ namespace display {
         case 1:
             command(MADCTL);
             data(0x20 | (1 << 3));
-            std::swap(horizontal_px, vertical_px);
             break;
         case 2:
             command(MADCTL);
@@ -58,16 +57,12 @@ namespace display {
         case 3:
             command(MADCTL);
             data(0xE0 | (1 << 3));
-            std::swap(horizontal_px, vertical_px);
             break;
         default:
-            break;
+            return;
         }
-    }
 
-    void ili9486::get_display_size(unsigned short &h_size, unsigned short &v_size) {
-        h_size = horizontal_px;
-        v_size = vertical_px;
+        current_rotation = rotation;
     }
 
     void ili9486::flush_pixels(const area &area, lv_color_t *color_p) {
