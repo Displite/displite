@@ -42,7 +42,7 @@ void display_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
 int main() {
     stdio_init_all();
 	lv_init();
-	queue_init(&sample_fifo, sizeof(display::area), 32);
+	queue_init(&sample_fifo, sizeof(lv_area_t), 32);
     tinyusb_process();
     return 0;
 }
@@ -105,7 +105,7 @@ void tinyusb_process() {
 void display_flush_process() {
 	
 	while(true) {
-        display::area element;
+        lv_area_t element;
 		queue_remove_blocking(&sample_fifo, &element);
 
 		dsp_drv->flush_pixels(element, color_p_lv);
@@ -238,14 +238,7 @@ void display_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
 		dsp_drv->rotate(disp->rotated);
 	}
 
-	display::area flush_area_lv {
-		area->x1,
-		area->y1,
-		area->x2,
-		area->y2
-	};
-
 	disp_lv = disp;
 	color_p_lv = color_p;
-	queue_add_blocking(&sample_fifo, &flush_area_lv);
+	queue_add_blocking(&sample_fifo, area);
 }

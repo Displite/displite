@@ -69,7 +69,7 @@ namespace display {
 
     }
 
-    void st7735::flush_pixels(const area &area, lv_color_t *color_p) {
+    void st7735::flush_pixels(const lv_area_t &area, lv_color_t *color_p) {
         command(display::display::CASET);
         data(area.x1 >> 8);
         data(area.x1 >> 0);

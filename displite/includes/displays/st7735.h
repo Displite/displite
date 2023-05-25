@@ -18,7 +18,7 @@ namespace display {
         void data(const uint8_t &);
         void data16(const uint16_t &);
         void rotate(short);
-        void flush_pixels(const area &, lv_color_t *);
+        void flush_pixels(const lv_area_t &, lv_color_t *);
 
         protected:
         std::vector<init_cmd> cd_list {

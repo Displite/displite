@@ -65,7 +65,7 @@ namespace display {
         current_rotation = rotation;
     }
 
-    void ili9486::flush_pixels(const area &area, lv_color_t *color_p) {
+    void ili9486::flush_pixels(const lv_area_t &area, lv_color_t *color_p) {
         
         command(display::display::CASET);
         data(area.x1 >> 8);

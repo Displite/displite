@@ -17,13 +17,6 @@ namespace display {
         uint32_t ms_time{};
     };
 
-    struct area {
-        int32_t x1;
-        int32_t y1;
-        int32_t x2;
-        int32_t y2;
-    };
-
     class display {
         protected:
         const uint CHIP_SELECT;
@@ -44,7 +37,7 @@ namespace display {
         virtual void command(const uint8_t &) = 0;
         virtual void data(const uint8_t &) = 0;
         virtual void data16(const uint16_t &) = 0;
-        virtual void flush_pixels(const area &, lv_color_t *) = 0;
+        virtual void flush_pixels(const lv_area_t &, lv_color_t *) = 0;
         short get_rotation();
         /**
          * set display orientation. 
